@@ -18,10 +18,19 @@ class Record{
 
 class Table{
     std::vector<std::vector<DBTypes>> fields;
+
+    public:
+        void addRow(std::vector<DBTypes> row);
+
+        template <typename T>
+        void addColumn(std::vector<DBTypes> column);
 };
 
-class WrapperT{
 
+class DBPredicate{
+    
+    public:
+        DBPredicate(std::array);
 };
 
 
@@ -36,7 +45,7 @@ class Interface{
 
         void update(const std::string& tableName, std::function<bool(WrapperT)> predicate, std::vector<UpdatePair> updatePairs);
 
-        std::vector<Record> select(const std::string& tableName, std::function<bool(WrapperT)> predicate);
+        Table select(const std::string& tableName, std::function<bool(WrapperT)> predicate);
 
         void drop(const std::string& tableName);
 
