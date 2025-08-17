@@ -20,6 +20,10 @@ class Table{
     std::vector<std::vector<DBTypes>> fields;
 };
 
+class WrapperT{
+
+};
+
 
 class Interface{
 
