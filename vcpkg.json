@@ -1,5 +1,5 @@
 {
-  "name": "DBMS",
+  "name": "dbms",
   "version-semver": "0.1.0",
   "dependencies": [
     {

@@ -1,59 +1,87 @@
 #pragma once
 
+#include "Typelist.hpp"
+
 #include <string>
 #include <functional>
 #include <map>
 #include <variant>
+#include <array>
 
 
-using DBTypes = std::variant<bool, int, double, std::string>;
-using UpdatePair = std::pair<std::string, DBTypes>;
-using ColumnTypePair = std::pair<std::string, std::string>;
+namespace DB{
+
+    using Types = Typelist<bool, int, double, std::string>;
+    enum TypeName{   BOOL, INT, DOUBLE,      STRING};
+
+    using Variant = variantOfTypes<Types>;
+    using VariantVector = variantofVectors<Types>;
+
+    /*
+    template <TypeName Enum> 
+    struct EnumToTypeHelper{
+        using type = std::tuple_element_t<static_cast<int>(Enum), tupleOfTypes<Types>>;
+    };
+    template <TypeName Enum>
+    using EnumToTypeMapping = EnumToTypeHelper<Enum>::type;
+    */
+
+    template <template<typename> typename Wrapper>
+    struct MappingStruct{
+        static inline const std::array<variantofWrappedTypes<Wrapper, Types>, Types::count> MappingArray{Wrapper<bool>(), Wrapper<int>(), Wrapper<double>(), Wrapper<std::string>()};
+    };
 
 
 
-class Record{
-    std::vector<DBTypes> fields;
-};
 
-class Table{
-    std::vector<std::vector<DBTypes>> fields;
-
-    public:
-        void addRow(std::vector<DBTypes> row);
-
-        template <typename T>
-        void addColumn(std::vector<DBTypes> column);
-};
+    using UpdatePair = std::pair<std::string, Variant>;
+    using ColumnTypePair = std::pair<TypeName, std::string>;
 
 
-class DBPredicate{
-    
-    public:
-        DBPredicate(std::array);
-};
+
+    class Row{
+        std::vector<Variant> fields;
+    };
+
+    struct Column{
+        std::string name;
+        TypeName type;
+        VariantVector data;
+    };
+
+    class Table{
+        std::vector<Column> columns;
+        
+        public:
+            void addRow(std::vector<Types> row);
+
+            void addColumn(const std::string& name, TypeName type);
+
+    };
 
 
-class Interface{
+    class Interface{
 
-    Table retrieve(const std::string& tableName);
+        Table retrieve(const std::string& tableName);
 
-    public:
-        Table create(const std::string& tableName, std::vector<ColumnTypePair> columnTypePairs);
+        public:
+            Table create(const std::string& tableName, std::vector<ColumnTypePair> columnTypePairs);
 
-        void insert(const std::string& tableName, Record record);
+            void insert(const std::string& tableName, Row row);
 
-        void update(const std::string& tableName, std::function<bool(WrapperT)> predicate, std::vector<UpdatePair> updatePairs);
+            void update(const std::string& tableName, std::function<bool()> predicate, std::vector<UpdatePair> updatePairs);
 
-        Table select(const std::string& tableName, std::function<bool(WrapperT)> predicate);
+            Table select(const std::string& tableName, std::function<bool()> predicate);
 
-        void drop(const std::string& tableName);
+            void drop(const std::string& tableName);
 
-        void destroy(const std::string& tableName, std::function<bool(WrapperT)> predicate);
+            void destroy(const std::string& tableName, std::function<bool()> predicate);
 
-        void addColumn(const std::string& tableName, ColumnTypePair columnTypePair);
+            void addColumn(const std::string& tableName, ColumnTypePair columnTypePair);
 
-        void dropColumn(const std::string& tableName, const std::string& columnName);
+            void dropColumn(const std::string& tableName, const std::string& columnName);
 
-        void renameColumn(const std::string& tableName, const std::string& oldColumnName, const std::string& newColumnName);
+            void renameColumn(const std::string& tableName, const std::string& oldColumnName, const std::string& newColumnName);
+    };
+
 };

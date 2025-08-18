@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 include(cmake/prelude.cmake)
 
 project(
-    DBMS
+    dbms
     VERSION 0.1.0
     DESCRIPTION "Short description"
     HOMEPAGE_URL "https://example.com/"
@@ -18,6 +18,7 @@ include(cmake/variables.cmake)
 add_library(
     DBMS_lib OBJECT
     source/lib.cpp
+    source/ProgrammingInterface.cpp
 )
 
 target_include_directories(
