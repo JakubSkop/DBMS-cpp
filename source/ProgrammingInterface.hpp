@@ -7,6 +7,7 @@
 #include <map>
 #include <variant>
 #include <array>
+#include <memory>
 
 
 namespace DB{
@@ -56,8 +57,38 @@ namespace DB{
             void addRow(std::vector<Types> row);
 
             void addColumn(const std::string& name, TypeName type);
-
     };
+
+    enum class ComparisonOperator{EQ, L, G, LEQ, GEQ, NEQ};
+    using FieldOrValue = std::variant<Variant, std::string>;
+
+    struct Expr;
+    using ExprPtr = std::unique_ptr<Expr>;
+
+    class Predicate{
+        FieldOrValue operand1;
+        FieldOrValue operand2;
+        ComparisonOperator opcode;
+    };
+
+    enum class BLogicalOperator{AND, OR};
+    enum class ULogicalOperator{NOT};
+
+    struct BinaryOperator{
+        ExprPtr Left;
+        BLogicalOperator opcode;
+        ExprPtr Right;
+    };
+    struct UnaryOperator{
+        ULogicalOperator opcode;
+        ExprPtr Right;
+    };
+
+    struct Expr{
+        std::variant<Predicate, BinaryOperator, UnaryOperator> value;
+    };
+
+
 
 
     class Interface{
