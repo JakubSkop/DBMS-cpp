@@ -28,8 +28,15 @@ namespace DB{
     */
 
     template <template<typename> typename Wrapper>
-    struct MappingStruct{
-        static inline const std::array<variantofWrappedTypes<Wrapper, Types>, Types::count> MappingArray{Wrapper<bool>(), Wrapper<int>(), Wrapper<double>(), Wrapper<std::string>()};
+    class MappingStruct{
+
+        template<class... Ts> 
+        static inline std::array<variantofWrappedTypes<Wrapper, Typelist<Ts...>>, Typelist<Ts...>::count> typelist_to_array_of_wrappers(Typelist<Ts...>){
+            return std::array<variantofWrappedTypes<Wrapper, Typelist<Ts...>>, Typelist<Ts...>::count>{Wrapper<Ts>()...};
+        }
+
+        public:
+            static inline const std::array<variantofWrappedTypes<Wrapper, Types>, Types::count> MappingArray{typelist_to_array_of_wrappers(Types())};
     };
 
 

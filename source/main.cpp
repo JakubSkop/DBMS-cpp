@@ -18,6 +18,7 @@ int main(){
 
     auto Customers = Table();
     Customers.addColumn("Name", STRING);
+    Customers.addColumn("Age", INT);
 
     //TypeName x = BOOL;
     //Customers.addColumn("Registered", x);
