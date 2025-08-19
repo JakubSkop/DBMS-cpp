@@ -17,7 +17,10 @@ int main(){
     //Customers.addColumn<BOOL>("Registered");
 
     auto Customers = Table();
-    Customers.addColumn("Name", STRING);
+    //Customers.addColumn("Name", STRING);
+    //Customers.addColumn("Age", INT);
+    auto st = FixedString<64>("Hello");
+    std::cout << sizeof(DataPage);
 
     //TypeName x = BOOL;
     //Customers.addColumn("Registered", x);
