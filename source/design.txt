@@ -1,0 +1,39 @@
+
+Header:
+    - Table Title (64 bytes)
+    - Number of Columns (1 byte, max 255 - 1 byte)
+    - Type of Columns (255 bytes)
+    - Column Names (64 bytes per column - max 255 - 16320 bytes)
+    - Index of First Data Page (4 bytes)
+    - Index of Last Data Page (4 bytes)
+    - Index of Root Page (4 bytes)
+
+Data Page (4096 bytes) {Page Type 0}:
+    - Header (11 bytes):
+        - Page ID   ( 4 bytes)
+        - Page Type ( 1 byte )
+        - Next Page ID ( 4 bytes )
+        - Number of Rows ( 2 bytes )
+    - Data:
+        - Rows (4085 bytes max)
+
+Root Page:
+
+Node Page:
+
+Leaf Page:
+
+
+
+
+Classes:
+    - Serialization Class
+    - Page struct
+    - 
+
+
+
+
+
+
+

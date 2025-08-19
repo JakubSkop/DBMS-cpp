@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Typelist.hpp"
+#include "fixedString.hpp"
 
 #include <string>
 #include <functional>
@@ -8,11 +9,23 @@
 #include <variant>
 #include <array>
 #include <memory>
+#include <iostream>
+#include <fstream>
+#include <list>
 
 
 namespace DB{
 
-    using Types = Typelist<bool, int, double, std::string>;
+    constexpr size_t PAGE_SIZE = 4096;
+    constexpr size_t BUFFER_SIZE = 256; //The max number of pages stored at once in the buffer
+
+    using ID_Int = uint32_t;
+    using TypeInt = uint8_t;
+    using RowInt = uint16_t; //Used to store the number of rows
+    using NameType = FixedString<64>;
+
+
+    using Types = Typelist<bool, int, double, FixedString<64>>;
     enum TypeName{   BOOL, INT, DOUBLE,      STRING};
 
     using Variant = variantOfTypes<Types>;
@@ -57,14 +70,67 @@ namespace DB{
         VariantVector data;
     };
 
-    class Table{
+    struct Header{
+        char NumberOfColumns;
+        std::array<TypeInt, 255> ColumnTypes;
+        std::array<NameType, 255> ColumnNames;
+        NameType TableName;
+        ID_Int FirstPageID;
+        ID_Int LastPageID;
+        ID_Int RootID;
+    };
+
+    struct DataPage{
+        ID_Int PageID;
+        ID_Int NextPageID;
+        RowInt NumberOfRows;
+        TypeInt PageType;
         std::vector<Column> columns;
+    };
+
+    struct RootPage{};
+    struct NodePage{};
+    struct LeafPage{};
+
+    using Page = std::variant<DataPage, RootPage, NodePage, LeafPage>;
+
+    class Serializer{
+        std::fstream file;
+
+        public:
+            Serializer(const std::string& filename);
+            Header getHeader();
+            void writeHeader(Header header);
+            Page getPage(ID_Int PageID);
+            void writePage(Page page);
+
+    };
+
+    class Buffer{
+
+        Serializer& serializer;
+        std::list<Page> pageList;
+
+        using ListIter = decltype(pageList)::const_iterator;
+        std::map<ID_Int, ListIter> bufferMap;
+
+
+        public:
+            Buffer(Serializer& serializer);
+            Page getPage(ID_Int pageId);
+
+    };
+
+    class Table{
+        Buffer buffer;
+        Serializer serializer;
+        Header header;
         
         public:
             void addRow(std::vector<Types> row);
-
-            void addColumn(const std::string& name, TypeName type);
     };
+
+
 
     enum class ComparisonOperator{EQ, L, G, LEQ, GEQ, NEQ};
     using FieldOrValue = std::variant<Variant, std::string>;
@@ -72,27 +138,22 @@ namespace DB{
     struct Expr;
     using ExprPtr = std::unique_ptr<Expr>;
 
-    class Predicate{
+    class Condition{
         FieldOrValue operand1;
         FieldOrValue operand2;
         ComparisonOperator opcode;
     };
 
     enum class BLogicalOperator{AND, OR};
-    enum class ULogicalOperator{NOT};
 
     struct BinaryOperator{
         ExprPtr Left;
         BLogicalOperator opcode;
         ExprPtr Right;
     };
-    struct UnaryOperator{
-        ULogicalOperator opcode;
-        ExprPtr Right;
-    };
 
     struct Expr{
-        std::variant<Predicate, BinaryOperator, UnaryOperator> value;
+        std::variant<Condition, BinaryOperator> value;
     };
 
 
@@ -113,11 +174,9 @@ namespace DB{
 
             void drop(const std::string& tableName);
 
-            void destroy(const std::string& tableName, std::function<bool()> predicate);
+            //void addColumn(const std::string& tableName, ColumnTypePair columnTypePair);
 
-            void addColumn(const std::string& tableName, ColumnTypePair columnTypePair);
-
-            void dropColumn(const std::string& tableName, const std::string& columnName);
+            //void dropColumn(const std::string& tableName, const std::string& columnName);
 
             void renameColumn(const std::string& tableName, const std::string& oldColumnName, const std::string& newColumnName);
     };
