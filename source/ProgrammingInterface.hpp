@@ -12,12 +12,14 @@
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <optional>
 
 
 namespace DB{
 
     constexpr size_t PAGE_SIZE = 4096;
     constexpr size_t BUFFER_SIZE = 256; //The max number of pages stored at once in the buffer
+    constexpr size_t BP_TREE_SIZE = 64;
 
     using ID_Int = uint32_t;
     using TypeInt = uint8_t;
@@ -88,11 +90,33 @@ namespace DB{
         std::vector<Column> columns;
     };
 
-    struct RootPage{};
-    struct NodePage{};
-    struct LeafPage{};
 
-    using Page = std::variant<DataPage, RootPage, NodePage, LeafPage>;
+
+    using PageRowPair = std::pair<ID_Int, RowInt>;
+    using PageRowPairs = std::vector<PageRowPair>;
+    using KeyArray = std::array<Variant, BP_TREE_SIZE>;
+    using KeyRange = std::pair<Variant&, Variant&>;
+    using OptionalKeyPagePair = std::optional<std::pair<Variant, ID_Int>>;
+
+    struct BPPage{
+        ID_Int PageID;
+        ID_Int ParentPageID;
+
+        size_t KeyCount;
+        DB::KeyArray Keys;
+    };
+
+    struct NodePage : BPPage{
+        std::array<ID_Int, BP_TREE_SIZE + 1> ChildPageIds;
+    };
+
+    struct LeafPage : BPPage{
+        std::array<PageRowPair, BP_TREE_SIZE> ChildPages;
+    };
+
+
+
+    using Page = std::variant<DataPage, NodePage, LeafPage>;
 
     class Serializer{
         std::fstream file;
