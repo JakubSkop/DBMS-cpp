@@ -94,13 +94,12 @@ namespace DB{
 
     using PageRowPair = std::pair<ID_Int, RowInt>;
     using PageRowPairs = std::vector<PageRowPair>;
-    using KeyArray = std::array<Variant, BP_TREE_SIZE>;
-    using KeyRange = std::pair<Variant&, Variant&>;
-    using OptionalKeyPagePair = std::optional<std::pair<Variant, ID_Int>>;
+    using KeyArray = std::array<int, BP_TREE_SIZE>;
+    using KeyRange = std::pair<int, int>;
+    using OptionalKeyPagePair = std::optional<std::pair<int, ID_Int>>;
 
     struct BPPage{
         ID_Int PageID;
-        ID_Int ParentPageID;
 
         size_t KeyCount;
         DB::KeyArray Keys;
