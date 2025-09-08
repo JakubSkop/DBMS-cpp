@@ -1,23 +1,7 @@
-<<<<<<< HEAD
-# DBMS-cpp
-=======
-# DBMS
+# SimpleDB (C++)
+SimpleDB is a small, self-contained DBMS written in C++ with an emphasis on:
 
-This is the DBMS project.
-
-# Building and installing
-
-See the [BUILDING](BUILDING.md) document.
-
-# Contributing
-
-See the [CONTRIBUTING](CONTRIBUTING.md) document.
-
-# Licensing
-
-<!--
-Please go to https://choosealicense.com/licenses/ and choose a license that
-fits your needs. The recommended license for a project of this type is the
-GNU AGPLv3.
--->
->>>>>>> 098d20d83cbab74cefaf5df0436329ad5a9bed97
+* **Storage & buffer management**: on-disk page format and an in-memory buffer pool with LRU eviction.
+* **Indexes**: B+ tree index implementation for quick searching and reduced cache misses.
+* **Query layer**: lightweight SQL-like parser and interface.
+* **Multi-threading**: Support for parallelism in query retrieval and database updates.
