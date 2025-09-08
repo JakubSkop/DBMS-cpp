@@ -12,6 +12,10 @@ class FixedString{
 
     public:
 
+        FixedString(){
+            characters[0] = '\0';
+        }
+
         FixedString(const std::string& str){
             size_t i{0};
             for (; i < std::min(str.length(), N); i++){

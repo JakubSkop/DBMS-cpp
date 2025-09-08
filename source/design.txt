@@ -1,5 +1,6 @@
 
-Header:
+
+Header (size = 16,652 bytes):
     - Table Title (64 bytes)
     - Number of Columns (1 byte, max 255 - 1 byte)
     - Type of Columns (255 bytes)
@@ -16,9 +17,7 @@ Data Page (4096 bytes) {Page Type 0}:
         - Number of Rows ( 2 bytes )
     - Data:
         - Rows (4085 bytes max)
-
-Root Page:
-
+        
 Node Page:
 
 Leaf Page:

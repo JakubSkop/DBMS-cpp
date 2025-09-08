@@ -17,7 +17,9 @@ include(cmake/variables.cmake)
 
 add_library(
     DBMS_lib OBJECT
-    source/lib.cpp
+    source/Table.cpp
+    source/CustomTypes/fixedString.cpp
+    source/Parser/Parser.cpp
     source/ProgrammingInterface.cpp
 )
 

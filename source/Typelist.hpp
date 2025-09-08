@@ -4,6 +4,7 @@
 #include <variant>
 #include <vector>
 #include <utility>
+#include <memory>
 
 template<typename... Ts> 
 struct Typelist{
@@ -29,9 +30,10 @@ template<class T>
 using variantOfTypes = decltype(typelist_to_variant(std::declval<T>()));
 
 template<template <typename> class W, class T> 
-using variantofWrappedTypes = decltype(typelist_to_variant_of_wrapped_types<W>(std::declval<T>()));
+using variantOfWrappedTypes = decltype(typelist_to_variant_of_wrapped_types<W>(std::declval<T>()));
 
 template<class T> 
-using variantofVectors = variantofWrappedTypes<std::vector, T>;
+using variantOfVectors = variantOfWrappedTypes<std::vector, T>;
+
 
 
